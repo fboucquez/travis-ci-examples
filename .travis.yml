@@ -18,9 +18,9 @@ jobs:
   include:
     - stage: publish
       script: /bin/bash ./travis/publish.sh
-      if: branch = env(DEV_BRANCH) AND type != pull_request
-      env:
-        - SCRIPT="./build-me.sh language1"
+      if: branch = env(DEV_BRANCH) AND type != pull_request AND env(TRAVIS_COMMIT_MESSAGE) != release
+#      env:
+#        - SCRIPT="./build-me.sh language1"
     - stage: release
       script: /bin/bash ./travis/release.sh
       if: branch = env(RELEASE_BRANCH) AND type != pull_request AND env(TRAVIS_COMMIT_MESSAGE) = release
@@ -29,5 +29,5 @@ jobs:
     - stage: post release
       script: /bin/bash travis/travis-functions.sh post_release_version_file
       if: branch = env(RELEASE_BRANCH) AND type != pull_request AND env(TRAVIS_COMMIT_MESSAGE) = release
-      env:
-        - SCRIPT="./build-me.sh language1"
+#      env:
+#        - SCRIPT="./build-me.sh language1"
