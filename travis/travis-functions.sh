@@ -35,6 +35,8 @@ log_env_variables(){
   echo "TRAVIS_COMMIT_MESSAGE = $TRAVIS_COMMIT_MESSAGE"
   echo "TRAVIS_REPO_SLUG = $TRAVIS_REPO_SLUG"
   echo "TRAVIS_BRANCH = $TRAVIS_BRANCH"
+  echo "TRAVIS_TAG = $TRAVIS_TAG"
+
 }
 
 
@@ -46,7 +48,7 @@ resolve_operation ()
   validate_env_variable "RELEASE_BRANCH" "$FUNCNAME"
   validate_env_variable "DEV_BRANCH" "$FUNCNAME"
   OPERATION=""
-  if [ "$TRAVIS_EVENT_TYPE" != "pull_request" ] && [ "$TRAVIS_COMMIT_MESSAGE" == "release" ]  && [ "$TRAVIS_BRANCH" == "$RELEASE_BRANCH" ];
+  if [ "$TRAVIS_EVENT_TYPE" != "pull_request" ] && [ "$TRAVIS_TAG" == "release" ]  && [ "$TRAVIS_BRANCH" == "$RELEASE_BRANCH" ];
    then
      OPERATION="release"
    else
@@ -96,6 +98,7 @@ load_version_from_file(){
 }
 
 docker_push(){
+  VERSION="$1"
   validate_env_variable "VERSION" "$FUNCNAME"
   validate_env_variable "OPERATION" "$FUNCNAME"
   validate_env_variable "DOCKER_IMAGE_NAME" "$FUNCNAME"
