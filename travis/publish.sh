@@ -2,6 +2,6 @@
 set -e
 
 . ./travis/travis-functions.sh
-load_version_from_file()
+load_version_from_file
 echo "Publishing version $VERSION"
 bash ./publish-me.sh one "$OPERATION"
