@@ -19,7 +19,7 @@ jobs:
       if: branch = $DEV_BRANCH AND type != pull_request
     - stage: release
       script: /bin/bash ./travis/release.sh
-      if: branch = $RELEASE_BRANCH type != pull_request AND AND env(TRAVIS_COMMIT_MESSAGE) = release
+      if: branch = $RELEASE_BRANCH type != pull_request AND env(TRAVIS_COMMIT_MESSAGE) = release
     - stage: post release
       script: /bin/bash travis/travis-functions.sh post_release_version_file
-      if: branch = $RELEASE_BRANCH type != pull_request AND AND env(TRAVIS_COMMIT_MESSAGE) = release
+      if: branch = $RELEASE_BRANCH type != pull_request AND env(TRAVIS_COMMIT_MESSAGE) = release
