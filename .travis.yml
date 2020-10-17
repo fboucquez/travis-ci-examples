@@ -6,17 +6,24 @@ env:
   - SCRIPT="./build-me.sh language4"
 before_script:
 - echo "BEFORE SCRIPT $SCRIPT"
+- . ./travis/pipeline-functions.sh
+- resolve_operation
 script:
-- bash $SCRIPT "Another"
+- echo "Script operation $OPERATION"
 jobs:
   include:
+    - stage: publish
+      env:
+        - SCRIPT="./build-me.sh language1"
+      script: /bin/bash publish-me.sh
+      if: $OPERATION = "publish"
     - stage: release
       env:
         - SCRIPT="./build-me.sh language1"
-      script: /bin/sh release-me.sh
-      if: branch = $RELEASE_BRANCH AND type != pull_request AND $TRAVIS_COMMIT_MESSAGE = "release"
+      script: /bin/bash release-me.sh
+      if: $OPERATION = "release"
     - stage: post release
       env:
         - SCRIPT="./build-me.sh language1"
-      script: /bin/sh travis/post-release.sh
-      if: branch = $RELEASE_BRANCH AND type != pull_request AND $TRAVIS_COMMIT_MESSAGE = "release"
+      script: /bin/bash travis/travis-functions.sh post_release
+      if: $OPERATION = "release"
