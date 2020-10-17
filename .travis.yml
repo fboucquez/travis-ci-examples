@@ -1,0 +1,21 @@
+env:
+  matrix:
+  - SCRIPT="./build-me.sh language1"
+  - SCRIPT="./build-me.sh language2"
+  - SCRIPT="./build-me.sh language3"
+  - SCRIPT="./build-me.sh language4"
+script:
+- . ./travis/travis-functions.sh
+- log_env_variables
+- bash -c "$SCRIPT $(resolve_operation) $(load_version_from_file)"
+jobs:
+  include:
+    - stage: publish
+      script: /bin/bash ./publish-me.sh
+      if: branch = env(DEV_BRANCH) AND type != pull_request AND commit_message != release
+    - stage: release
+      script: /bin/bash ./release-me.sh
+      if: branch = env(RELEASE_BRANCH) AND type != pull_request AND commit_message = release
+    - stage: post release
+      script: /bin/bash travis/travis-functions.sh post_release_version_file
+      if: branch = env(RELEASE_BRANCH) AND type != pull_request AND commit_message = release
