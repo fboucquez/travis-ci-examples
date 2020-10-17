@@ -11,7 +11,8 @@ before_script:
 - load_version_from_file
 script:
 - . ./travis/travis-functions.sh
-- echo "Script operation $OPERATION"
+- load_version_from_file
+- echo "Script operation $OPERATION $OPERATION $VERSION"
 - bash -c "$SCRIPT $OPERATION"
 jobs:
   include:
@@ -22,11 +23,11 @@ jobs:
         - SCRIPT="./build-me.sh language1"
     - stage: release
       script: /bin/bash ./travis/release.sh
-      if: branch = env(RELEASE_BRANCH) type != pull_request AND env(TRAVIS_COMMIT_MESSAGE) = release
+      if: branch = env(RELEASE_BRANCH) AND type != pull_request AND env(TRAVIS_COMMIT_MESSAGE) = release
       env:
         - SCRIPT="./build-me.sh language1"
     - stage: post release
       script: /bin/bash travis/travis-functions.sh post_release_version_file
-      if: branch = env(RELEASE_BRANCH) type != pull_request AND env(TRAVIS_COMMIT_MESSAGE) = release
+      if: branch = env(RELEASE_BRANCH) AND type != pull_request AND env(TRAVIS_COMMIT_MESSAGE) = release
       env:
         - SCRIPT="./build-me.sh language1"
