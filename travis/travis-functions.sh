@@ -165,3 +165,7 @@ if [ "$1" == "post_release_version_file" ];then
     post_release_version_file
 fi
 
+if [ "$1" == "docker_push" ];then
+    docker_push
+fi
+
