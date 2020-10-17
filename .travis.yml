@@ -10,6 +10,7 @@ before_script:
 - resolve_operation
 script:
 - echo "Script operation $OPERATION"
+- bash $SCRIPT
 jobs:
   include:
     - stage: publish
