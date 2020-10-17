@@ -57,8 +57,7 @@ resolve_operation ()
        OPERATION="build"
     fi
   fi
-  set OPERATION="$OPERATION"
-  echo "Resolved OPERATION $OPERATION"
+  echo -e "$OPERATION"
 }
 
 validate_env_variable ()
@@ -87,11 +86,13 @@ checkout_branch ()
 }
 
 load_version_from_npm(){
-  set VERSION="$(npm run version --silent)"
+  VERSION="$(npm run version --silent)"
+  echo -e "$VERSION"
 }
 
 load_version_from_file(){
-  set VERSION="$(head -n 1 version.txt)"
+  VERSION="$(head -n 1 version.txt)"
+  echo -e "$VERSION"
 }
 
 docker_push(){
@@ -136,7 +137,7 @@ post_release_version_file(){
   validate_env_variable "REMOTE_NAME" "$FUNCNAME"
   validate_env_variable "POST_RELEASE_BRANCH" "$FUNCNAME"
   checkout_branch "${RELEASE_BRANCH}"
-  load_version_from_file
+  VERSION="$(load_version_from_file)"
 
   NEW_VERSION=$(increment_version "$VERSION")
 
@@ -157,8 +158,6 @@ post_release_version_file(){
   git push --tags $REMOTE_NAME
 
 }
-
-resolve_operation
 
 if [ "$1" == "post_release_version_file" ];then
     post_release_version_file

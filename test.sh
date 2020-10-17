@@ -10,10 +10,20 @@ TRAVIS_COMMIT_MESSAGE="release"
 TRAVIS_REPO_SLUG=fboucquez/travis-ci-examples
 
 
-. ./travis/travis-functions.sh "docker_push"
+. ./travis/travis-functions.sh
 
-SCRIPT="./build-me.sh language1"
-bash -c "$SCRIPT $OPERATION"
+echo "VERSION: $(load_version_from_file)"
+echo "OPERATION: $(resolve_operation)"
+
+#load_version_from_file
+#
+echo "$VERSION"
+echo "$OPERATION"
+#
+#echo "HERE"
+#
+#SCRIPT="./build-me.sh language1"
+#bash -c "$SCRIPT $OPERATION"
 
 
 

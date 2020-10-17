@@ -4,16 +4,9 @@ env:
   - SCRIPT="./build-me.sh language2"
   - SCRIPT="./build-me.sh language3"
   - SCRIPT="./build-me.sh language4"
-before_script:
-- echo "before_script $SCRIPT"
-- . ./travis/travis-functions.sh
-- log_env_variables
-- load_version_from_file
 script:
 - . ./travis/travis-functions.sh
-- load_version_from_file
-- echo "Script operation $SCRIPT $OPERATION $VERSION"
-- bash -c "$SCRIPT $OPERATION"
+- bash -c "$SCRIPT $(resolve_operation) $(load_version_from_file))"
 jobs:
   include:
     - stage: publish
