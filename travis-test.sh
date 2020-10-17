@@ -11,5 +11,5 @@ TRAVIS_REPO_SLUG=fboucquez/travis-ci-examples
 SCRIPT="./build-me.sh language4"
 
 . ./travis/travis-functions.sh
-echo "Script operation $SCRIPT $(resolve_operation) $(load_version_from_file)"
+echo "Script operation $SCRIPT $(resolve_operation)"
 bash -c "$SCRIPT $(resolve_operation) $(load_version_from_file)"

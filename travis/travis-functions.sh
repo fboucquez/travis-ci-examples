@@ -169,3 +169,8 @@ if [ "$1" == "docker_push" ];then
     docker_push $2
 fi
 
+if [ "$1" == "docker_push_version_file" ];then
+    docker_push $(load_version_from_file)
+fi
+
+
