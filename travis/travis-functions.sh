@@ -87,11 +87,11 @@ checkout_branch ()
 }
 
 load_version_from_npm(){
-  set VERSION=$(npm run version --silent)
+  set VERSION="$(npm run version --silent)"
 }
 
 load_version_from_file(){
-  set VERSION=$(head -n 1 version.txt)
+  set VERSION="$(head -n 1 version.txt)"
 }
 
 docker_push(){

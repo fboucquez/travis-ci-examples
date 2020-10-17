@@ -12,7 +12,7 @@ before_script:
 script:
 - . ./travis/travis-functions.sh
 - load_version_from_file
-- echo "Script operation $OPERATION $OPERATION $VERSION"
+- echo "Script operation $SCRIPT $OPERATION $VERSION"
 - bash -c "$SCRIPT $OPERATION"
 jobs:
   include:
