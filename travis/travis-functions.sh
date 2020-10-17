@@ -2,6 +2,7 @@
 set -e
 
 REMOTE_NAME="origin"
+FUNCTIONS_VERSION="0.1.2"
 
 test_travis_functions ()
 {
@@ -24,7 +25,6 @@ increment_version ()
   echo -e "${new// /.}"
 }
 
-
 log_env_variables(){
   echo "DEV_BRANCH = $DEV_BRANCH"
   echo "POST_RELEASE_BRANCH = $POST_RELEASE_BRANCH"
@@ -36,25 +36,29 @@ log_env_variables(){
   echo "TRAVIS_REPO_SLUG = $TRAVIS_REPO_SLUG"
   echo "TRAVIS_BRANCH = $TRAVIS_BRANCH"
   echo "TRAVIS_TAG = $TRAVIS_TAG"
+  echo "FUNCTIONS_VERSION = $FUNCTIONS_VERSION"
+}
 
+
+validate_env_variables(){
+  log_env_variables
+  validate_env_variable "TRAVIS_EVENT_TYPE" "$FUNCNAME"
+  validate_env_variable "RELEASE_BRANCH" "$FUNCNAME"
+  validate_env_variable "POST_RELEASE_BRANCH" "$FUNCNAME"
+  validate_env_variable "DEV_BRANCH" "$FUNCNAME"
+  validate_env_variable "TRAVIS_COMMIT_MESSAGE" "$FUNCNAME"
 }
 
 resolve_operation ()
 {
-  validate_env_variable "TRAVIS_EVENT_TYPE" "$FUNCNAME"
-  validate_env_variable "TRAVIS_COMMIT_MESSAGE" "$FUNCNAME"
-  validate_env_variable "RELEASE_BRANCH" "$FUNCNAME"
-  validate_env_variable "DEV_BRANCH" "$FUNCNAME"
-  OPERATION=""
-  if [ "$TRAVIS_EVENT_TYPE" != "pull_request" ] && [ "$TRAVIS_COMMIT_MESSAGE" == "release" ]  && [ "$TRAVIS_BRANCH" == "$RELEASE_BRANCH" ];
+  OPERATION="build"
+  if [[ ("$TRAVIS_COMMIT_MESSAGE" == "release" ||  "$DEV_BRANCH" != "$RELEASE_BRANCH" ) && "$TRAVIS_EVENT_TYPE" != "pull_request"  && "$TRAVIS_BRANCH" == "$RELEASE_BRANCH" ]];
    then
      OPERATION="release"
    else
        if [ "$TRAVIS_EVENT_TYPE" != "pull_request" ] && [ "$TRAVIS_BRANCH" == "$DEV_BRANCH" ];
      then
        OPERATION="publish"
-     else
-       OPERATION="build"
     fi
   fi
   echo -e "$OPERATION"
@@ -69,6 +73,18 @@ validate_env_variable ()
       exit 128
   fi
 }
+
+assert_value ()
+{
+  value="$1"
+  expectedValue="$2"
+  if [ "$value" != "$expectedValue" ]
+    then
+      echo "'$value' is not the expected value '$expectedValue'"
+      exit 128
+  fi
+}
+
 
 
 checkout_branch ()
@@ -93,44 +109,6 @@ load_version_from_npm(){
 load_version_from_file(){
   VERSION="$(head -n 1 version.txt)"
   echo -e "$VERSION"
-}
-
-docker_push(){
-  VERSION="$1"
-  OPERATION=$(resolve_operation)
-
-  validate_env_variable "VERSION" "$FUNCNAME"
-  validate_env_variable "OPERATION" "$FUNCNAME"
-  validate_env_variable "DOCKER_IMAGE_NAME" "$FUNCNAME"
-  validate_env_variable "DOCKER_USERNAME" "$FUNCNAME"
-  validate_env_variable "DOCKER_PASSWORD" "$FUNCNAME"
-
-  echo "Login into docker..."
-  echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
-
-  echo "Creating image ${DOCKER_IMAGE_NAME}:${VERSION}"
-  docker build -t "${DOCKER_IMAGE_NAME}:${VERSION}" .
-
-  if [ "$OPERATION" = "publish" ]
-  then
-      echo "Building for operation ${OPERATION}..."
-      echo "Docker tagging alpha version"
-      docker tag "${DOCKER_IMAGE_NAME}:${VERSION}" "${DOCKER_IMAGE_NAME}:${VERSION}-alpha"
-      docker tag "${DOCKER_IMAGE_NAME}:${VERSION}" "${DOCKER_IMAGE_NAME}:${VERSION}-alpha-$(date +%Y%m%d%H%M)"
-      echo "Docker pushing alpha"
-      docker push "${DOCKER_IMAGE_NAME}:${VERSION}-alpha"
-      docker push "${DOCKER_IMAGE_NAME}:${VERSION}-alpha-$(date +%Y%m%d%H%M)"
-  fi
-
-  if [ "$OPERATION" = "release" ]
-  then
-      echo "Building for operation ${$OPERATION}"
-      echo "Docker tagging release version"
-      docker tag "${DOCKER_IMAGE_NAME}:${VERSION}" "${DOCKER_IMAGE_NAME}:release"
-      echo "Docker pushing release"
-      docker push "${DOCKER_IMAGE_NAME}:release"
-      docker push "${DOCKER_IMAGE_NAME}:${VERSION}"
-  fi
 }
 
 post_release_version_file(){
@@ -164,4 +142,6 @@ post_release_version_file(){
 if [ "$1" == "post_release_version_file" ];then
     post_release_version_file
 fi
+
+
 
