@@ -26,10 +26,10 @@ increment_version ()
 
 resolve_operation ()
 {
-  validate_env_variable "TRAVIS_EVENT_TYPE"
-  validate_env_variable "TRAVIS_COMMIT_MESSAGE"
-  validate_env_variable "RELEASE_BRANCH"
-  validate_env_variable "DEV_BRANCH"
+  validate_env_variable "TRAVIS_EVENT_TYPE" "$FUNCNAME"
+  validate_env_variable "TRAVIS_COMMIT_MESSAGE" "$FUNCNAME"
+  validate_env_variable "RELEASE_BRANCH" "$FUNCNAME"
+  validate_env_variable "DEV_BRANCH" "$FUNCNAME"
   OPERATION=""
   if [ "$TRAVIS_EVENT_TYPE" != "pull_request" ] && [ "$TRAVIS_COMMIT_MESSAGE" == "release" ]  && [ "$TRAVIS_BRANCH" == "$RELEASE_BRANCH" ];
    then
@@ -50,7 +50,7 @@ validate_env_variable ()
   var="$1"
   if [ "${!var}" = "" ]
     then
-      echo "Env $var has not been provided"
+      echo "Env $var has not been provided for operation '$2'"
       exit 128
   fi
 }
@@ -59,10 +59,10 @@ validate_env_variable ()
 checkout_branch ()
 {
   CHECKOUT_BRANCH="$1"
-  validate_env_variable "TRAVIS_REPO_SLUG"
-  validate_env_variable "CHECKOUT_BRANCH"
-  validate_env_variable "GITHUB_TOKEN"
-  validate_env_variable "REMOTE_NAME"
+  validate_env_variable "TRAVIS_REPO_SLUG" "$FUNCNAME"
+  validate_env_variable "CHECKOUT_BRANCH" "$FUNCNAME"
+  validate_env_variable "GITHUB_TOKEN" "$FUNCNAME"
+  validate_env_variable "REMOTE_NAME" "$FUNCNAME"
   git remote rm $REMOTE_NAME
   echo "Setting remote url https://github.com/${TRAVIS_REPO_SLUG}.git"
   git remote add $REMOTE_NAME "https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git" >/dev/null 2>&1
@@ -70,15 +70,59 @@ checkout_branch ()
   git checkout $CHECKOUT_BRANCH
 }
 
+load_version_from_npm(){
+  VERSION=$(npm run version --silent)
+}
 
-post_release(){
+load_version_from_file(){
+  VERSION=$(head -n 1 version.txt)
+}
 
-  validate_env_variable "RELEASE_BRANCH"
-  validate_env_variable "REMOTE_NAME"
-  validate_env_variable "POST_RELEASE_BRANCH"
+docker_push(){
+  validate_env_variable "VERSION" "$FUNCNAME"
+  validate_env_variable "OPERATION" "$FUNCNAME"
+  validate_env_variable "DOCKER_IMAGE_NAME" "$FUNCNAME"
+  validate_env_variable "DOCKER_USERNAME" "$FUNCNAME"
+  validate_env_variable "DOCKER_PASSWORD" "$FUNCNAME"
+
+  echo "Login into docker..."
+  echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
+
+  echo "Creating image ${DOCKER_IMAGE_NAME}:${VERSION}"
+  docker build -t "${DOCKER_IMAGE_NAME}:${VERSION}" .
+
+  if [ "$OPERATION" = "publish" ]
+  then
+      echo "Building for operation ${OPERATION}..."
+      echo "Docker tagging alpha version"
+      docker tag "${DOCKER_IMAGE_NAME}:${VERSION}" "${DOCKER_IMAGE_NAME}:${VERSION}-alpha"
+      docker tag "${DOCKER_IMAGE_NAME}:${VERSION}" "${DOCKER_IMAGE_NAME}:${VERSION}-alpha-$(date +%Y%m%d%H%M)"
+      echo "Docker pushing alpha"
+      docker push "${DOCKER_IMAGE_NAME}:${VERSION}-alpha"
+      docker push "${DOCKER_IMAGE_NAME}:${VERSION}-alpha-$(date +%Y%m%d%H%M)"
+  fi
+
+  if [ "$OPERATION" = "release" ]
+  then
+      echo "Building for operation ${$OPERATION}"
+      echo "Docker tagging release version"
+      docker tag "${DOCKER_IMAGE_NAME}:${VERSION}" "${DOCKER_IMAGE_NAME}:release"
+      echo "Docker pushing release"
+      docker push "${DOCKER_IMAGE_NAME}:release"
+      docker push "${DOCKER_IMAGE_NAME}:${VERSION}"
+  fi
+}
+
+
+post_release_version_file(){
+
+  validate_env_variable "RELEASE_BRANCH" "$FUNCNAME"
+  validate_env_variable "REMOTE_NAME" "$FUNCNAME"
+  validate_env_variable "POST_RELEASE_BRANCH" "$FUNCNAME"
+  load_version_from_file
+
   checkout_branch "${RELEASE_BRANCH}"
 
-  VERSION=$(head -n 1 version.txt)
   NEW_VERSION=$(increment_version "$VERSION")
 
   echo "Version: $VERSION"
@@ -109,8 +153,4 @@ post_release(){
 }
 
 resolve_operation
-
-if [ "$1" == "post_release" ];then
-    post_release
-fi
 

@@ -9,10 +9,13 @@ POST_RELEASE_BRANCH="main"
 TRAVIS_COMMIT_MESSAGE="release"
 TRAVIS_REPO_SLUG=fboucquez/travis-ci-examples
 
-. ./travis/travis-functions.sh
+
+. ./travis/travis-functions.sh "docker_push"
 
 SCRIPT="./build-me.sh language1"
 bash -c "$SCRIPT $OPERATION"
+
+
 
 #VERSION=$(head -n 1 version.txt)
 #echo "${VERSION}"

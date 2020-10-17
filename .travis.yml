@@ -7,7 +7,7 @@ env:
 before_script:
 - echo "BEFORE SCRIPT $SCRIPT"
 - . ./travis/travis-functions.sh
-- resolve_operation
+- load_version_from_file
 script:
 - echo "Script operation $OPERATION"
 - bash -c "$SCRIPT $OPERATION"
@@ -16,15 +16,13 @@ jobs:
     - stage: publish
 #      env:
 #        - SCRIPT="./build-me.sh language1"
-      script: /bin/bash publish-me.sh
-      if: env(OPERATION) = "publish"
+      script: /bin/bash ./travis/publish.sh
     - stage: release
 #      env:
 #        - SCRIPT="./build-me.sh language1"
-      script: /bin/bash release-me.sh
-      if: env(OPERATION) = "release"
+      script: /bin/bash ./travis/release.sh
     - stage: post release
 #      env:
 #        - SCRIPT="./build-me.sh language1"
-      script: /bin/bash travis/travis-functions.sh post_release
-      if: env(OPERATION) = "release"
+      script: /bin/bash travis/travis-functions.sh post_release_version_file
+#      if: env(OPERATION) = "release"
