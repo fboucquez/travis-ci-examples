@@ -7,7 +7,7 @@ env:
 before_script:
 - echo "BEFORE SCRIPT $SCRIPT"
 script:
-- bash "$SCRIPT"
+- bash $SCRIPT "Another"
 jobs:
   include:
     - stage: release
