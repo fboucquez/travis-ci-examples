@@ -5,8 +5,9 @@ env:
   - SCRIPT="./build-me.sh language3"
   - SCRIPT="./build-me.sh language4"
 before_script:
-- echo "BEFORE SCRIPT $SCRIPT"
+- echo "before_script $SCRIPT"
 - . ./travis/travis-functions.sh
+- log_env_variables
 - load_version_from_file
 script:
 - echo "Script operation $OPERATION"

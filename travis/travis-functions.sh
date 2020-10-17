@@ -24,6 +24,21 @@ increment_version ()
   echo -e "${new// /.}"
 }
 
+
+log_env_variables(){
+  echo "DEV_BRANCH = $DEV_BRANCH"
+  echo "POST_RELEASE_BRANCH = $POST_RELEASE_BRANCH"
+  echo "RELEASE_BRANCH = $RELEASE_BRANCH"
+  echo "REMOTE_NAME = $REMOTE_NAME"
+  echo "DOCKER_IMAGE_NAME = $DOCKER_IMAGE_NAME"
+  echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
+  echo "TRAVIS_COMMIT_MESSAGE = $TRAVIS_COMMIT_MESSAGE"
+  echo "TRAVIS_REPO_SLUG = $TRAVIS_REPO_SLUG"
+  echo "TRAVIS_BRANCH = $TRAVIS_BRANCH"
+}
+
+
+
 resolve_operation ()
 {
   validate_env_variable "TRAVIS_EVENT_TYPE" "$FUNCNAME"
