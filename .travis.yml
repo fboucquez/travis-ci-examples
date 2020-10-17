@@ -15,6 +15,9 @@ jobs:
     - stage: release
       script: /bin/bash ./release-me.sh
       if: branch = env(RELEASE_BRANCH) AND type != pull_request AND tag = release
-    - stage: post release
+    - stage: release version and tag
       script: /bin/bash travis/travis-functions.sh post_release_version_file
+      if: branch = env(RELEASE_BRANCH) AND type != pull_request AND tag = release
+    - stage: post remove release tag
+      script: /bin/bash travis/travis-functions.sh post_release_delete_release_tag
       if: branch = env(RELEASE_BRANCH) AND type != pull_request AND tag = release

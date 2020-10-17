@@ -133,6 +133,15 @@ docker_push(){
   fi
 }
 
+post_release_delete_release_tag(){
+
+  validate_env_variable "REMOTE_NAME" "$FUNCNAME"
+
+  echo "Removing tag: release"
+  git tag -d release
+  git push $REMOTE_NAME :refs/tags/release
+}
+
 
 post_release_version_file(){
 
@@ -164,4 +173,8 @@ post_release_version_file(){
 
 if [ "$1" == "post_release_version_file" ];then
     post_release_version_file
+fi
+
+if [ "$1" == "post_release_delete_release_tag" ];then
+    post_release_delete_release_tag
 fi
