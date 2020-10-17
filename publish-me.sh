@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-echo "Publish $1 $2 on version $VERSION"
+. ./travis/travis-functions.sh
+load_version_from_file
+echo "Publish $OPERATION on version $VERSION"

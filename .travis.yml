@@ -17,17 +17,11 @@ script:
 jobs:
   include:
     - stage: publish
-      script: /bin/bash ./travis/publish.sh
+      script: /bin/bash ./publish-me.sh
       if: branch = env(DEV_BRANCH) AND type != pull_request AND commit_message != release
-#      env:
-#        - SCRIPT="./build-me.sh language1"
     - stage: release
-      script: /bin/bash ./travis/release.sh
+      script: /bin/bash ./release-me.sh
       if: branch = env(RELEASE_BRANCH) AND type != pull_request AND commit_message = release
-      env:
-        - SCRIPT="./build-me.sh language1"
     - stage: post release
       script: /bin/bash travis/travis-functions.sh post_release_version_file
       if: branch = env(RELEASE_BRANCH) AND type != pull_request AND commit_message = release
-#      env:
-#        - SCRIPT="./build-me.sh language1"

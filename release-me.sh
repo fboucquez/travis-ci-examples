@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-VERSION=$(head -n 1 version.txt)
-echo "Releasing $1 $2 on version $VERSION"
+. ./travis/travis-functions.sh
+load_version_from_file
+echo "Releasing $OPERATION on version $VERSION"
