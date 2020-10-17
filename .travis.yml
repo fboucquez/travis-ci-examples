@@ -6,7 +6,7 @@ env:
   - SCRIPT="./build-me.sh language4"
 before_script:
 - echo "BEFORE SCRIPT $SCRIPT"
-- . ./travis/pipeline-functions.sh
+- . ./travis/travis-functions.sh
 - resolve_operation
 script:
 - echo "Script operation $OPERATION"
