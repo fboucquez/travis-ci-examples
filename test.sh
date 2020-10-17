@@ -11,14 +11,16 @@ TRAVIS_REPO_SLUG=fboucquez/travis-ci-examples
 
 . ./travis/travis-functions.sh
 
-VERSION=$(head -n 1 version.txt)
-echo "${VERSION}"
+SCRIPT="./build-me.sh language1"
+bash -c "$SCRIPT $OPERATION"
 
-echo "${NEW_VERSION}"
-
-test_travis_functions
-post_release
-
+#VERSION=$(head -n 1 version.txt)
+#echo "${VERSION}"
+#
+#echo "${NEW_VERSION}"
+#
+#test_travis_functions
+#post_release
 #SCRIPT="./build-me.sh language1"
 #FULL_SCRIPT="${SCRIPT} ${OPERATION}"
 #bash $FULL_SCRIPT
