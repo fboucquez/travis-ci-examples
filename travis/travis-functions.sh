@@ -57,6 +57,7 @@ resolve_operation ()
        OPERATION="build"
     fi
   fi
+  set OPERATION="$OPERATION"
   echo "Resolved OPERATION $OPERATION"
 }
 
@@ -86,11 +87,11 @@ checkout_branch ()
 }
 
 load_version_from_npm(){
-  VERSION=$(npm run version --silent)
+  set VERSION=$(npm run version --silent)
 }
 
 load_version_from_file(){
-  VERSION=$(head -n 1 version.txt)
+  set VERSION=$(head -n 1 version.txt)
 }
 
 docker_push(){
