@@ -6,7 +6,7 @@ env:
   - SCRIPT="./build-me.sh language4"
 script:
 - . ./travis/travis-functions.sh
-- bash -c "$SCRIPT $(resolve_operation) $(load_version_from_file))"
+- bash -c "$SCRIPT $(resolve_operation) $(load_version_from_file)"
 jobs:
   include:
     - stage: publish
