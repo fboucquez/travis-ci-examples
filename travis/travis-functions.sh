@@ -119,23 +119,13 @@ post_release_version_file(){
   validate_env_variable "RELEASE_BRANCH" "$FUNCNAME"
   validate_env_variable "REMOTE_NAME" "$FUNCNAME"
   validate_env_variable "POST_RELEASE_BRANCH" "$FUNCNAME"
-  load_version_from_file
-
   checkout_branch "${RELEASE_BRANCH}"
+  load_version_from_file
 
   NEW_VERSION=$(increment_version "$VERSION")
 
   echo "Version: $VERSION"
   echo "New Version: $NEW_VERSION"
-
-  echo "Current Version"
-  cat version.txt
-  echo ""
-
-  echo "Releasing version $VERSION"
-  echo "$VERSION" > 'version.txt'
-  git add version.txt
-  git commit -m "Releasing version $VERSION"
 
   echo "Creating tag version v$VERSION"
   git tag -fa "v$VERSION" -m "Releasing version $VERSION"
