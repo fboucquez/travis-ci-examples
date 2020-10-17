@@ -154,3 +154,6 @@ post_release_version_file(){
 
 resolve_operation
 
+if [ "$1" == "post_release_version_file" ];then
+    post_release_version_file
+fi

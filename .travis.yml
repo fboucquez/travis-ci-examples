@@ -14,15 +14,8 @@ script:
 jobs:
   include:
     - stage: publish
-#      env:
-#        - SCRIPT="./build-me.sh language1"
       script: /bin/bash ./travis/publish.sh
     - stage: release
-#      env:
-#        - SCRIPT="./build-me.sh language1"
       script: /bin/bash ./travis/release.sh
     - stage: post release
-#      env:
-#        - SCRIPT="./build-me.sh language1"
       script: /bin/bash travis/travis-functions.sh post_release_version_file
-#      if: env(OPERATION) = "release"
