@@ -166,6 +166,6 @@ if [ "$1" == "post_release_version_file" ];then
 fi
 
 if [ "$1" == "docker_push" ];then
-    docker_push
+    docker_push $2
 fi
 

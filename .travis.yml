@@ -14,13 +14,13 @@ jobs:
       script: /bin/bash ./publish-me.sh
       if: branch = env(DEV_BRANCH) AND type != pull_request AND commit_message != release
     - stage: docker push dev
-      script: /bin/bash travis/travis-functions.sh docker_push
+      script: /bin/bash travis/travis-functions.sh docker_push $(load_version_from_file)
       if: branch = env(DEV_BRANCH) AND type != pull_request AND commit_message != release
     - stage: release
       script: /bin/bash ./release-me.sh
       if: branch = env(RELEASE_BRANCH) AND type != pull_request AND commit_message = release
     - stage: docker push prod
-      script: /bin/bash travis/travis-functions.sh docker_push
+      script: /bin/bash travis/travis-functions.sh docker_push $(load_version_from_file)
       if: branch = env(RELEASE_BRANCH) AND type != pull_request AND commit_message = release
     - stage: post release
       script: /bin/bash travis/travis-functions.sh post_release_version_file
