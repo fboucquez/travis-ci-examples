@@ -42,6 +42,7 @@ resolve_operation ()
        OPERATION="build"
     fi
   fi
+  echo "Resolved OPERATION $OPERATION"
 }
 
 validate_env_variable ()
@@ -57,7 +58,7 @@ validate_env_variable ()
 
 checkout_branch ()
 {
-  CHECKOUT_BRANCH = $1
+  CHECKOUT_BRANCH="$1"
   validate_env_variable "TRAVIS_REPO_SLUG"
   validate_env_variable "CHECKOUT_BRANCH"
   validate_env_variable "GITHUB_TOKEN"
@@ -107,7 +108,9 @@ post_release(){
 
 }
 
+resolve_operation
 
-if [ $1 == "post_release" ];then
+if [ "$1" == "post_release" ];then
     post_release
 fi
+
