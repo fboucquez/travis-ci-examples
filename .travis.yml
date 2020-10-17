@@ -7,7 +7,7 @@ env:
 before_script:
 - echo "BEFORE SCRIPT $SCRIPT"
 script:
-- bash -c "$SCRIPT $GENERATE_OPERATION"
+- bash "$SCRIPT"
 jobs:
   include:
     - stage: release
