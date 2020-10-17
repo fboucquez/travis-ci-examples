@@ -7,9 +7,14 @@ env:
 before_script:
 - echo "BEFORE SCRIPT $SCRIPT"
 script:
-- bash "$SCRIPT $GENERATE_OPERATION"
+- bash -c "$SCRIPT $GENERATE_OPERATION"
 jobs:
   include:
+    - stage: release
+      env:
+        - SCRIPT="./build-me.sh language1"
+      script: /bin/sh release-me.sh
+      if: branch = $RELEASE_BRANCH AND type != pull_request AND $TRAVIS_COMMIT_MESSAGE = "release"
     - stage: post release
       env:
         - SCRIPT="./build-me.sh language1"
