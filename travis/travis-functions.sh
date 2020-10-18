@@ -2,6 +2,7 @@
 set -e
 
 REMOTE_NAME="origin"
+FUNCTIONS_VERSION="0.1.2"
 
 test_travis_functions ()
 {
@@ -24,19 +25,27 @@ increment_version ()
   echo -e "${new// /.}"
 }
 
+validate_env_variables(){
+  validate_env_variable "TRAVIS_EVENT_TYPE" "$FUNCNAME"
+  validate_env_variable "RELEASE_BRANCH" "$FUNCNAME"
+  validate_env_variable "POST_RELEASE_BRANCH" "$FUNCNAME"
+  validate_env_variable "DEV_BRANCH" "$FUNCNAME"
+  validate_env_variable "TRAVIS_COMMIT_MESSAGE" "$FUNCNAME"
+}
+
 
 log_env_variables(){
   echo "DEV_BRANCH = $DEV_BRANCH"
   echo "POST_RELEASE_BRANCH = $POST_RELEASE_BRANCH"
   echo "RELEASE_BRANCH = $RELEASE_BRANCH"
   echo "REMOTE_NAME = $REMOTE_NAME"
-  echo "DOCKER_IMAGE_NAME = $DOCKER_IMAGE_NAME"
   echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
   echo "TRAVIS_COMMIT_MESSAGE = $TRAVIS_COMMIT_MESSAGE"
   echo "TRAVIS_REPO_SLUG = $TRAVIS_REPO_SLUG"
   echo "TRAVIS_BRANCH = $TRAVIS_BRANCH"
   echo "TRAVIS_TAG = $TRAVIS_TAG"
-
+  echo "FUNCTIONS_VERSION = $FUNCTIONS_VERSION"
+  echo "DOCKER_IMAGE_NAME = $DOCKER_IMAGE_NAME"
 }
 
 resolve_operation ()
@@ -95,44 +104,6 @@ load_version_from_file(){
   echo -e "$VERSION"
 }
 
-docker_push(){
-  VERSION="$1"
-  OPERATION=$(resolve_operation)
-
-  validate_env_variable "VERSION" "$FUNCNAME"
-  validate_env_variable "OPERATION" "$FUNCNAME"
-  validate_env_variable "DOCKER_IMAGE_NAME" "$FUNCNAME"
-  validate_env_variable "DOCKER_USERNAME" "$FUNCNAME"
-  validate_env_variable "DOCKER_PASSWORD" "$FUNCNAME"
-
-  echo "Login into docker..."
-  echo "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USERNAME}" --password-stdin
-
-  echo "Creating image ${DOCKER_IMAGE_NAME}:${VERSION}"
-  docker build -t "${DOCKER_IMAGE_NAME}:${VERSION}" .
-
-  if [ "$OPERATION" = "publish" ]
-  then
-      echo "Building for operation ${OPERATION}..."
-      echo "Docker tagging alpha version"
-      docker tag "${DOCKER_IMAGE_NAME}:${VERSION}" "${DOCKER_IMAGE_NAME}:${VERSION}-alpha"
-      docker tag "${DOCKER_IMAGE_NAME}:${VERSION}" "${DOCKER_IMAGE_NAME}:${VERSION}-alpha-$(date +%Y%m%d%H%M)"
-      echo "Docker pushing alpha"
-      docker push "${DOCKER_IMAGE_NAME}:${VERSION}-alpha"
-      docker push "${DOCKER_IMAGE_NAME}:${VERSION}-alpha-$(date +%Y%m%d%H%M)"
-  fi
-
-  if [ "$OPERATION" = "release" ]
-  then
-      echo "Building for operation ${$OPERATION}"
-      echo "Docker tagging release version"
-      docker tag "${DOCKER_IMAGE_NAME}:${VERSION}" "${DOCKER_IMAGE_NAME}:release"
-      echo "Docker pushing release"
-      docker push "${DOCKER_IMAGE_NAME}:release"
-      docker push "${DOCKER_IMAGE_NAME}:${VERSION}"
-  fi
-}
-
 post_release_version_file(){
 
   validate_env_variable "RELEASE_BRANCH" "$FUNCNAME"
@@ -165,12 +136,5 @@ if [ "$1" == "post_release_version_file" ];then
     post_release_version_file
 fi
 
-if [ "$1" == "docker_push" ];then
-    docker_push $2
-fi
-
-if [ "$1" == "docker_push_version_file" ];then
-    docker_push $(load_version_from_file)
-fi
 
 
