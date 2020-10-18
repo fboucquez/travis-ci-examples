@@ -142,8 +142,8 @@ post_release_version_file(){
 
 push_github_pages(){
 
-  CURRENT_VERSION = "$1"
-  DOCS_PATH = "$2"
+  CURRENT_VERSION="$1"
+  DOCS_PATH="$2"
   PUBLICATION_BRANCH=gh-pages
   REPO_PATH=$PWD
 
