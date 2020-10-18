@@ -151,8 +151,8 @@ push_github_pages(){
   validate_env_variable "PUBLICATION_BRANCH" "$FUNCNAME"
   validate_env_variable "DOCS_PATH" "$FUNCNAME"
   validate_env_variable "GITHUB_TOKEN" "$FUNCNAME"
-  validate_env_variable "$TRAVIS_REPO_SLUG" "$FUNCNAME"
-  validate_env_variable "$REPO_PATH" "$REPO_PATH"
+  validate_env_variable "TRAVIS_REPO_SLUG" "$FUNCNAME"
+  validate_env_variable "REPO_PATH" "$REPO_PATH"
 
   # Checkout the branch
   rm -rf $HOME/publish
