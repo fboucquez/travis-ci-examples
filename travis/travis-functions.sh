@@ -139,6 +139,39 @@ post_release_version_file(){
 
 }
 
+
+push_github_pages(){
+
+  CURRENT_VERSION = "$1"
+  DOCS_PATH = "$2"
+  PUBLICATION_BRANCH=gh-pages
+  REPO_PATH=$PWD
+
+  validate_env_variable "CURRENT_VERSION" "$FUNCNAME"
+  validate_env_variable "PUBLICATION_BRANCH" "$FUNCNAME"
+  validate_env_variable "DOCS_PATH" "$FUNCNAME"
+  validate_env_variable "GITHUB_TOKEN" "$FUNCNAME"
+  validate_env_variable "$TRAVIS_REPO_SLUG" "$FUNCNAME"
+  validate_env_variable "$REPO_PATH" "$REPO_PATH"
+
+  # Checkout the branch
+  rm -rf $HOME/publish
+  cd $HOME
+  git clone --branch=$PUBLICATION_BRANCH    https://${GITHUB_TOKEN}@github.com/$TRAVIS_REPO_SLUG publish 2>&1 > /dev/null
+  cd publish
+  # Update pages
+
+  cp -r $REPO_PATH/${DOCS_PATH}. ./
+  # Commit and push latest version
+  git add .
+  git config user.name  "Travis"
+  git config user.email "travis@travis-ci.org"
+  git commit -m "Uploading $CURRENT_VERSION docs."
+  git push -fq origin $PUBLICATION_BRANCH 2>&1 > /dev/null
+  cd $REPO_PATH
+
+}
+
 if [ "$1" == "post_release_version_file" ];then
     post_release_version_file
 fi
