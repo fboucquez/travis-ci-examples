@@ -25,7 +25,23 @@ increment_version ()
   echo -e "${new// /.}"
 }
 
+log_env_variables(){
+  echo "DEV_BRANCH = $DEV_BRANCH"
+  echo "POST_RELEASE_BRANCH = $POST_RELEASE_BRANCH"
+  echo "RELEASE_BRANCH = $RELEASE_BRANCH"
+  echo "REMOTE_NAME = $REMOTE_NAME"
+  echo "DOCKER_IMAGE_NAME = $DOCKER_IMAGE_NAME"
+  echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
+  echo "TRAVIS_COMMIT_MESSAGE = $TRAVIS_COMMIT_MESSAGE"
+  echo "TRAVIS_REPO_SLUG = $TRAVIS_REPO_SLUG"
+  echo "TRAVIS_BRANCH = $TRAVIS_BRANCH"
+  echo "TRAVIS_TAG = $TRAVIS_TAG"
+  echo "FUNCTIONS_VERSION = $FUNCTIONS_VERSION"
+}
+
+
 validate_env_variables(){
+  log_env_variables
   validate_env_variable "TRAVIS_EVENT_TYPE" "$FUNCNAME"
   validate_env_variable "RELEASE_BRANCH" "$FUNCNAME"
   validate_env_variable "POST_RELEASE_BRANCH" "$FUNCNAME"
@@ -33,37 +49,16 @@ validate_env_variables(){
   validate_env_variable "TRAVIS_COMMIT_MESSAGE" "$FUNCNAME"
 }
 
-
-log_env_variables(){
-  echo "DEV_BRANCH = $DEV_BRANCH"
-  echo "POST_RELEASE_BRANCH = $POST_RELEASE_BRANCH"
-  echo "RELEASE_BRANCH = $RELEASE_BRANCH"
-  echo "REMOTE_NAME = $REMOTE_NAME"
-  echo "TRAVIS_EVENT_TYPE = $TRAVIS_EVENT_TYPE"
-  echo "TRAVIS_COMMIT_MESSAGE = $TRAVIS_COMMIT_MESSAGE"
-  echo "TRAVIS_REPO_SLUG = $TRAVIS_REPO_SLUG"
-  echo "TRAVIS_BRANCH = $TRAVIS_BRANCH"
-  echo "TRAVIS_TAG = $TRAVIS_TAG"
-  echo "FUNCTIONS_VERSION = $FUNCTIONS_VERSION"
-  echo "DOCKER_IMAGE_NAME = $DOCKER_IMAGE_NAME"
-}
-
 resolve_operation ()
 {
-  validate_env_variable "TRAVIS_EVENT_TYPE" "$FUNCNAME"
-  validate_env_variable "TRAVIS_COMMIT_MESSAGE" "$FUNCNAME"
-  validate_env_variable "RELEASE_BRANCH" "$FUNCNAME"
-  validate_env_variable "DEV_BRANCH" "$FUNCNAME"
-  OPERATION=""
-  if [ "$TRAVIS_EVENT_TYPE" != "pull_request" ] && [ "$TRAVIS_COMMIT_MESSAGE" == "release" ]  && [ "$TRAVIS_BRANCH" == "$RELEASE_BRANCH" ];
+  OPERATION="build"
+  if [[ ("$TRAVIS_COMMIT_MESSAGE" == "release" ||  "$DEV_BRANCH" != "$RELEASE_BRANCH" ) && "$TRAVIS_EVENT_TYPE" != "pull_request"  && "$TRAVIS_BRANCH" == "$RELEASE_BRANCH" ]];
    then
      OPERATION="release"
    else
        if [ "$TRAVIS_EVENT_TYPE" != "pull_request" ] && [ "$TRAVIS_BRANCH" == "$DEV_BRANCH" ];
      then
        OPERATION="publish"
-     else
-       OPERATION="build"
     fi
   fi
   echo -e "$OPERATION"
