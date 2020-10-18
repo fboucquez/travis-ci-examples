@@ -32,7 +32,7 @@ docker_push(){
 
   if [ "$OPERATION" = "release" ]
   then
-      echo "Building for operation ${$OPERATION}"
+      echo "Building for operation ${OPERATION}"
       echo "Docker tagging release version"
       docker tag "${DOCKER_IMAGE_NAME}:${VERSION}" "${DOCKER_IMAGE_NAME}:release"
       echo "Docker pushing release"
