@@ -74,6 +74,18 @@ validate_env_variable ()
   fi
 }
 
+assert_value ()
+{
+  value="$1"
+  expectedValue="$2"
+  if [ "$value" != "$expectedValue" ]
+    then
+      echo "'$value' is not the expected value '$expectedValue'"
+      exit 128
+  fi
+}
+
+
 
 checkout_branch ()
 {

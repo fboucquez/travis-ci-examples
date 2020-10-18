@@ -3,11 +3,11 @@ env:
   - SCRIPT="./build-me.sh language1"
   - SCRIPT="./build-me.sh language2"
   - SCRIPT="./build-me.sh language3"
-  - SCRIPT="./build-me.sh language4"
 script:
 - . ./travis/travis-functions.sh
 - log_env_variables
 - bash -c "$SCRIPT $(resolve_operation) $(load_version_from_file)"
+- ./tests/resolve-operation.sh
 jobs:
   include:
     - stage: publish
