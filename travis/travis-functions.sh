@@ -166,7 +166,7 @@ push_github_pages(){
   git add .
   git config user.name  "Travis"
   git config user.email "travis@travis-ci.org"
-  git commit -m "Uploading $CURRENT_VERSION docs."
+  git diff-index --quiet HEAD || git commit -m "Uploading $CURRENT_VERSION docs."
   git push -fq origin $PUBLICATION_BRANCH 2>&1 > /dev/null
   cd $REPO_PATH
 
